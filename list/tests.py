@@ -5,6 +5,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import resolve 
 from django.http import HttpRequest
+from django.template.loader import render_to_string
 """
     这个resolve的作用就是解析url根据解析结果返回views里面的函数
 """
@@ -28,7 +29,5 @@ class sometest(TestCase):
         用户在游览器中请求网页时，django看到的就是这么个对象
         """
         response=home_page(request)
-        self.assertTrue(response.content.startswith(b'<html>'))
-        self.assertIn(b"<title>To-Do lists</title>",response.content)
-        self.assertTrue(response.content.endswith(b'</html>'))
-
+        u_html=render_to_string('home.html')
+        self.assertEqual(response.content.decode(),u_html)
