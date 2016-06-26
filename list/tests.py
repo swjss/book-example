@@ -14,11 +14,6 @@ from  list.views import home_page
 
 
 # Create your tests here.
-'''
-class sometest(TestCase):
-    def test_some_method(self):
-        self.assertEqual(1+1,3)
-'''
 class sometest(TestCase):
     def test_resolve_root_url_to_home_page_view(self):
         found=resolve('/')
@@ -31,3 +26,14 @@ class sometest(TestCase):
         response=home_page(request)
         u_html=render_to_string('home.html')
         self.assertEqual(response.content.decode(),u_html)
+    def test_home_page_can_save_a_POST_request(self):
+        request=HttpRequest()
+        request.method='POST'
+        request.POST['item_text']='A new list item'
+
+        response=home_page(request)
+
+        self.assertIn('A new list item',response.content.decode())
+
+#        text_html=render_to_string('home.html',{'new_item_text':request.POST['item_text']})
+#        self.assertIn('A new list item',text_html)

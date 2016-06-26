@@ -6,6 +6,10 @@ from selenium.webdriver.common.keys import Keys
 import unittest,time
 
 class NewViewOrTest(unittest.TestCase):
+    def check_item_in_rows(self,item):
+        table = self.bowser.find_element_by_id('id_list_table')
+        rows=table.find_elements_by_tag_name('tr')
+        self.assertTrue(any(row.text==item for row in rows),"new to-do item did not appear in table\n%s" % table.text)
     def setUp(self):
         self.bowser=webdriver.Firefox()
     def tearDown(self):
@@ -17,12 +21,15 @@ class NewViewOrTest(unittest.TestCase):
         self.assertIn('To-Do',header_text)
         inputbox=self.bowser.find_element_by_id('id_new_item')
         self.assertEqual(inputbox.get_attribute('placeholder'),'Enter a to-do item')
-        inputbox.send_keys("Buy peacock feathers")
+        inputbox.send_keys("1: Buy peacock feathers")
         inputbox.send_keys(Keys.ENTER)
-        table = self.bowser.find_element_by_id('id_list_table')
-        rows=table.find_elements_by_tag_name('tr')
-        self.assertTrue(any(row.text=='1: Buy peacock feathers' for row in rows),"new to-do item did not appear in table")
-
+        self.check_item_in_rows("1: Buy peacock feathers")
+        inputbox=self.bowser.find_element_by_id('id_new_item')
+        inputbox.send_keys("2: Use peacock feathers to make a fly")
+        inputbox.send_keys(Keys.ENTER)
+        self.check_item_in_rows("1: Buy peacock feathers")
+        self.check_item_in_rows("2: Use peacock feathers to make a fly")
+	
         self.fail("final to test")
 if __name__ == '__main__':
     unittest.main()
