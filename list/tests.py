@@ -75,8 +75,9 @@ class ListViewTest(TestCase):
         self.assertTemplateUsed(response,'list.html')
 
     def test_display_all_item(self):
-        Item.objects.create(text='itemey 1')
-        Item.objects.create(text='itemey 2')
+        list_ = List.objects.create()
+        Item.objects.create(text='itemey 1',list=list_)
+        Item.objects.create(text='itemey 2',list=list_)
         
         response = self.client.get('/list/the-only-list-in-the-world/')
 
