@@ -23,15 +23,50 @@ class NewViewOrTest(LiveServerTestCase):
         inputbox=self.bowser.find_element_by_id('id_new_item')
         self.assertEqual(inputbox.get_attribute('placeholder'),'Enter a to-do item')
         inputbox.send_keys("Buy peacock feathers")
+        #她按回车的时候被带进一个新的url
+        #这个页面代办事项显示了 1: Buy peacock feathers
+
+        inputbox.send_keys(Keys.ENTER)
+        time.sleep(10)
+        edith_list_url = self.bowser.current_url
+        self.check_item_in_rows("1: Buy peacock feathers")
+        self.assertRegex(edith_list_url,'/list/.+')
+        # 页面显示了一个文本框可以接收新的待办事项
+        inputbox=self.bowser.find_element_by_id('id_new_item')
+        inputbox.send_keys("Use peacock feathers to make a fly")
+        time.sleep(10)
         inputbox.send_keys(Keys.ENTER)
         time.sleep(10)
         self.check_item_in_rows("1: Buy peacock feathers")
-        inputbox=self.bowser.find_element_by_id('id_new_item')
-        inputbox.send_keys("Use peacock feathers to make a fly")
-        inputbox.send_keys(Keys.ENTER)
-        self.check_item_in_rows("1: Buy peacock feathers")
         self.check_item_in_rows("2: Use peacock feathers to make a fly")
-	
+        	
+        time.sleep(10)
+        # 现在一个叫弗朗西斯的人访问首页
+
+        ##我们使用一个新的游览器回话
+        ##保证伊迪斯的信息不会从cookie中泄露出来
+        self.bowser.quit()
+        self.bowser=webdriver.Firefox()
+        #弗朗西斯访问首也
+        #页面中看不到伊迪斯的清单
+        self.bowser.get(self.live_server_url)
+        page_text = self.bowser.find_element_by_tag_name('body').text
+        self.assertNotIn('Buy peacock feathers',page_text)
+        self.assertNotIn('make a fly',page_text)
+
+        #弗朗西斯输入了一个新的办事清单
+        #他不像伊迪斯那么兴趣盎然
+        inputbox = self.bowser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy milk')
+        inputbox.send_keys(Keys.ENTER)
+
+
+        # 弗朗西斯货到了他的唯一url
+        francis_list_url = self.bowser.current_url
+        self.assertRegex(francis_list_url,'/list/.+')
+        self.assertNotEqual(francis_list_url,edith_list_url)
+
+        #ok 完成
         self.fail("final to test")
 
 #if __name__ == '__main__':
