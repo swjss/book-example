@@ -3,10 +3,11 @@
 
 from selenium import webdriver
 from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.common.keys import Keys
 import unittest,time
 
-class NewViewOrTest(LiveServerTestCase):
+class NewViewOrTest(StaticLiveServerTestCase):
     def check_item_in_rows(self,item):
         table = self.bowser.find_element_by_id('id_list_table')
         rows=table.find_elements_by_tag_name('tr')
@@ -14,6 +15,7 @@ class NewViewOrTest(LiveServerTestCase):
     def setUp(self):
         self.bowser=webdriver.Firefox()
     def tearDown(self):
+        self.bowser.refresh()
         self.bowser.quit()
     def test_can_start_a_list_and_retive_after(self):
         self.bowser.get(self.live_server_url)
